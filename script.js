@@ -67,10 +67,12 @@ subtractBtn.addEventListener("click", handlePress);
 multiplyBtn.addEventListener("click", handlePress);
 divideBtn.addEventListener("click", handlePress);
 equal.addEventListener("click", calculateResult);
-
+document.addEventListener("keydown", (e) => {
+    if (checkKey(e))
+        mappingKeyboard(e);
+})
 function calculateResult() {
     let result = operate(operator, +num1, +num2);
-    console.log(result);
     if (result != undefined) {
         if (+result != result) {
             displayOnScreen(result);
@@ -107,7 +109,6 @@ function handlePress(e) {
             } else {
                 num1 += e.target.textContent;
             }
-            console.log(`num1 ${num1}`);
         } else {
             if (e.target == dot) {
                 if (dotPressed)
@@ -117,7 +118,6 @@ function handlePress(e) {
             } else {
                 num2 += e.target.textContent;
             }
-            console.log(`num2 ${num2}`);
         }
     } else {
         if (num1.length == 0) {
@@ -129,14 +129,12 @@ function handlePress(e) {
         } else if (operator.length != 0) {
             if (num2.length != 0) {
                 {
-                    console.log("hi")
                     calculateResult();
                     return;
                 }
 
             } else {
                 operator = e.target.textContent;
-                console.log("op" + operator);
             }
 
         } else {
@@ -145,10 +143,8 @@ function handlePress(e) {
             operator += e.target.textContent;
             operatorPressed = true;
             dotPressed = false;
-            console.log(operator);
         }
     }
-    console.log(num1.length)
 
     expression = `${num1} ${operator} ${num2}`;
     displayOnScreen(expression.trim());
@@ -160,21 +156,15 @@ function removeDigit() {
         expression = expression.trimEnd();
         digit = expression.at(expression.length - 1);
         if (num2.length != 0) {
-            console.log("before" + num2);
             num2 = num2.slice(0, num2.length - 1);
-            console.log("after" + num2);
             if (digit == ".")
                 dotPressed = false;
         } else {
             if (operator != 0) {
-                console.log("before" + operator);
                 operator = "";
-                console.log("after" + operator);
                 operatorPressed = false;
             } else {
-                console.log("before" + num1);
                 num1 = num1.slice(0, num1.length - 1);
-                console.log("after" + num1);
                 if (digit == ".")
                     dotPressed = false;
                 if (digit == "-")
@@ -201,4 +191,29 @@ function rest(screenRest) {
     operatorPressed = false;
     if (screenRest)
         displayOnScreen("");
+}
+
+function checkKey(e) {
+    return (e.key > '0' && e.key < '9') || ['-', '+', '/', '*', '=', "Delete", "Backspace"].includes(e.key);
+}
+
+function mappingKeyboard(e) {
+    const buttons = Array.from(document.querySelectorAll(".button"));
+    buttons.forEach((item) => {
+        let key = item.textContent;
+        if (item.textContent == '–') {
+            key = "-";
+        } else if (item.textContent == "÷") {
+            key = "/";
+        } else if (item.textContent == "×") {
+            key = "*";
+        } else if (item.textContent == "CE") {
+            key = "Backspace";
+        } else if (item.textContent == "C") {
+            key = "Delete";
+        }
+        if (key == e.key) {
+            item.click();
+        }
+    });
 }
